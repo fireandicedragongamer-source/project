@@ -6,12 +6,12 @@ local LocalPlayer = Players.LocalPlayer
 local allowedUserIds = {
 	[7244992381] = true, -- Example UserId for Player1
 	[4674230178] = true, -- Example UserId for Player2
-    -- Add more UserIds here
+    -- Add more UserIds here
 }
 
 if not allowedUserIds[LocalPlayer.UserId] then
-    -- If not allowed, do nothing (no flying controls)
-    return
+    -- If not allowed, do nothing (no flying controls)
+    return
 end
 
 local root = script.Parent:FindFirstChild("HumanoidRootPart")
@@ -37,10 +37,7 @@ end
 local mobileFrame = nil
 if UserInputService.TouchEnabled then
 	-- Only create UI if on mobile
-	local playerGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
-	if not playerGui then
-		playerGui = LocalPlayer.PlayerGui
-	end
+	local playerGui = LocalPlayer.PlayerGui
 
 	mobileFrame = Instance.new("Frame")
 	mobileFrame.Name = "FlyControls"
@@ -92,7 +89,7 @@ UserInputService.InputBegan:Connect(function(inp)
 			if humanoid then
 				humanoid.WalkSpeed = humanoid.WalkSpeed * 5
 			end
-		else 
+		else 
 			workspace.Gravity = 196.1999969482422
 			if humanoid then
 				humanoid.WalkSpeed = humanoid.WalkSpeed / 5
@@ -112,4 +109,3 @@ UserInputService.InputBegan:Connect(function(inp)
 		end
 	end
 end)
-
