@@ -1,0 +1,115 @@
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Whitelist of allowed players (by UserId)
+local allowedUserIds = {
+	[7244992381] = true, -- Example UserId for Player1
+	[4674230178] = true, -- Example UserId for Player2
+    -- Add more UserIds here
+}
+
+if not allowedUserIds[LocalPlayer.UserId] then
+    -- If not allowed, do nothing (no flying controls)
+    return
+end
+
+local root = script.Parent:FindFirstChild("HumanoidRootPart")
+local humanoid = script.Parent:FindFirstChild("Humanoid")
+local isFlying = false
+
+-- Mobile UI setup
+local function createButton(name, position, callback, parent)
+	local button = Instance.new("TextButton")
+	button.Name = name
+	button.Text = name
+	button.Size = UDim2.new(0, 80, 0, 40)
+	button.Position = position
+	button.BackgroundColor3 = Color3.fromRGB(60, 180, 255)
+	button.TextColor3 = Color3.new(1,1,1)
+	button.Font = Enum.Font.SourceSansBold
+	button.TextSize = 24
+	button.Parent = parent
+	button.Activated:Connect(callback)
+	return button
+end
+
+local mobileFrame = nil
+if UserInputService.TouchEnabled then
+	-- Only create UI if on mobile
+	local playerGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+	if not playerGui then
+		playerGui = LocalPlayer.PlayerGui
+	end
+
+	mobileFrame = Instance.new("Frame")
+	mobileFrame.Name = "FlyControls"
+	mobileFrame.Size = UDim2.new(0, 260, 0, 50)
+	mobileFrame.Position = UDim2.new(0.5, -130, 1, -60)
+	mobileFrame.BackgroundTransparency = 1
+	mobileFrame.Parent = playerGui
+
+	-- Fly toggle button
+	createButton("Fly", UDim2.new(0, 0, 0, 0), function()
+		isFlying = not isFlying
+		if isFlying then
+			workspace.Gravity = 0
+			if humanoid then
+				humanoid.WalkSpeed = humanoid.WalkSpeed * 5
+			end
+		else
+			workspace.Gravity = 196.1999969482422
+			if humanoid then
+				humanoid.WalkSpeed = humanoid.WalkSpeed / 5
+			end
+		end
+	end, mobileFrame)
+
+	-- Up button
+	createButton("Up", UDim2.new(0, 90, 0, 0), function()
+		if not isFlying then return end
+		if root then
+			root.CFrame = CFrame.new(root.Position.X, root.Position.Y + 7, root.Position.Z)
+		end
+	end, mobileFrame)
+
+	-- Down button
+	createButton("Down", UDim2.new(0, 180, 0, 0), function()
+		if not isFlying then return end
+		if root then
+			root.CFrame = CFrame.new(root.Position.X, root.Position.Y - 7, root.Position.Z)
+		end
+	end, mobileFrame)
+end
+
+-- Keyboard controls for PC
+UserInputService.InputBegan:Connect(function(inp)
+	if inp.KeyCode == Enum.KeyCode.F then
+		isFlying = not isFlying
+
+		if isFlying then
+			workspace.Gravity = 0
+			if humanoid then
+				humanoid.WalkSpeed = humanoid.WalkSpeed * 5
+			end
+		else 
+			workspace.Gravity = 196.1999969482422
+			if humanoid then
+				humanoid.WalkSpeed = humanoid.WalkSpeed / 5
+			end
+		end
+	end
+
+	if inp.KeyCode == Enum.KeyCode.E then
+		if not isFlying then return end
+		if root then
+			root.CFrame = CFrame.new(root.Position.X, root.Position.Y + 7, root.Position.Z)
+		end
+	elseif inp.KeyCode == Enum.KeyCode.Q then
+		if not isFlying then return end
+		if root then
+			root.CFrame = CFrame.new(root.Position.X, root.Position.Y - 7, root.Position.Z)
+		end
+	end
+end)
+
